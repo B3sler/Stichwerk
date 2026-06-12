@@ -1,6 +1,6 @@
 # Bots & State-Store Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add a heuristic `BotStrategy` for Rufspiel bidding/play, a `gameStore` (Zustand) that wraps `domain/engine` and auto-resolves bot turns, and a persisted `settingsStore` for theme/card-design/sound preferences.
 
@@ -14,7 +14,7 @@
 
 - Create: `src/domain/bots/strategy.ts` — `BotStrategy` interface.
 - Create: `src/domain/bots/simpleBot.ts` — `simpleBotStrategy`.
-- Modify: `package.json` — add `setupFiles` for the AsyncStorage Jest mock.
+- Modify: `package.json` — add a `moduleNameMapper` for the AsyncStorage Jest mock.
 - Create: `src/state/gameStore.ts` — `useGameStore` (Zustand).
 - Create: `src/state/settingsStore.ts` — `useSettingsStore` (Zustand + persist).
 - Test files mirror each module: `src/domain/__tests__/simpleBot.test.ts`, `src/state/__tests__/gameStore.test.ts`, `src/state/__tests__/settingsStore.test.ts`.
@@ -30,7 +30,7 @@
 
 `simpleBotStrategy` makes no claim to playing strength (per the design spec): for bidding it plays Rufspiel with the first callable suit if any exists, otherwise passes; for card play it always plays the weakest legal card (lowest `cardRank`), which naturally prefers non-trump cards over trumps.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/domain/__tests__/simpleBot.test.ts
@@ -92,12 +92,12 @@ describe("simpleBotStrategy.chooseCard", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npm test -- simpleBot`
 Expected: FAIL with "Cannot find module '../bots/simpleBot'"
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```ts
 // src/domain/bots/strategy.ts
@@ -140,12 +140,12 @@ export const simpleBotStrategy: BotStrategy = {
 };
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npm test -- simpleBot`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/domain/bots/strategy.ts src/domain/bots/simpleBot.ts src/domain/__tests__/simpleBot.test.ts
@@ -161,7 +161,7 @@ git commit -m "feat: add simple heuristic bot strategy for rufspiel"
 - Create: `src/state/settingsStore.ts`
 - Test: `src/state/__tests__/settingsStore.test.ts`
 
-- [ ] **Step 1: Update Jest config**
+- [x] **Step 1: Update Jest config**
 
 In `package.json`, change the `"jest"` block from:
 
@@ -182,7 +182,7 @@ to:
   }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 ```ts
 // src/state/__tests__/settingsStore.test.ts
@@ -209,12 +209,12 @@ describe("useSettingsStore", () => {
 });
 ```
 
-- [ ] **Step 3: Run test to verify it fails**
+- [x] **Step 3: Run test to verify it fails**
 
 Run: `npm test -- settingsStore`
 Expected: FAIL with "Cannot find module '../settingsStore'"
 
-- [ ] **Step 4: Write minimal implementation**
+- [x] **Step 4: Write minimal implementation**
 
 ```ts
 // src/state/settingsStore.ts
@@ -252,12 +252,12 @@ export const useSettingsStore = create<SettingsState>()(
 );
 ```
 
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
 
 Run: `npm test -- settingsStore`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add package.json src/state/settingsStore.ts src/state/__tests__/settingsStore.test.ts
@@ -274,7 +274,7 @@ git commit -m "feat: add persisted settings store"
 
 `useGameStore` holds the single `GameState` for the local game. `startNewRound` deals a fresh game. `placeBid`/`playCard` always act on the human player (index 0), then call `runBotTurns`, which repeatedly applies `simpleBotStrategy` decisions for the bot whose turn it is (computed from `bidding.order`/`currentTrick`) until it's the human's turn or the round ends.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/state/__tests__/gameStore.test.ts
@@ -432,12 +432,12 @@ describe("useGameStore", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npm test -- gameStore`
 Expected: FAIL with "Cannot find module '../gameStore'"
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```ts
 // src/state/gameStore.ts
@@ -504,12 +504,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
 }));
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npm test -- gameStore`
 Expected: PASS
 
-- [ ] **Step 5: Run the full test suite and type check**
+- [x] **Step 5: Run the full test suite and type check**
 
 Run: `npm test`
 Expected: all tests pass (existing 55 + new tests from this plan)
@@ -517,7 +517,7 @@ Expected: all tests pass (existing 55 + new tests from this plan)
 Run: `npx tsc --noEmit`
 Expected: no errors
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/state/gameStore.ts src/state/__tests__/gameStore.test.ts
