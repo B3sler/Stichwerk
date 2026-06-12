@@ -568,60 +568,26 @@ describe("calculateLaufende", () => {
 });
 
 describe("calculateRoundScore", () => {
-  it("declares the declarer team the winner when they have more than 60 Augen", () => {
-    // Player 0 (declarer) wins a trick worth 61 Augen worth of cards via two tricks.
-    const tricks: TrickCard[][] = [
-      trick([
-        [0, { suit: "eichel", rank: "ass" }], // 11
-        [1, { suit: "schell", rank: "7" }], // 0
-        [2, { suit: "laub", rank: "7" }], // 0
-        [3, { suit: "schell", rank: "8" }], // 0
-      ]),
-      trick([
-        [0, { suit: "eichel", rank: "10" }], // 10, player 0 leads and wins (no trump/follow from others)
-        [1, { suit: "schell", rank: "9" }],
-        [2, { suit: "schell", rank: "koenig" }], // 4
-        [3, { suit: "schell", rank: "10" }], // 10 -> but doesn't follow eichel and isn't trump, can't win
-      ]),
-    ];
-    // Remaining 6 tricks (108 Augen total minus the 35 above = 85 Augen) all go to player 1 (opponent team).
-    for (let i = 0; i < 6; i++) {
-      tricks.push(
-        trick([
-          [1, { suit: "herz", rank: i === 0 ? "ass" : "7" }],
-          [0, { suit: "schell", rank: "7" }],
-          [2, { suit: "laub", rank: "7" }],
-          [3, { suit: "laub", rank: "8" }],
-        ])
-      );
-    }
-
-    const score = calculateRoundScore(tricks, rufspiel, "rufspiel", DEFAULT_SCORING_CONFIG);
-    expect(score.declarerTeamPoints + score.opponentTeamPoints).toBe(0); // sanity placeholder, replaced below
-  });
-
   it("computes a simple win with base tarif and no schneider/schwarz/laufende", () => {
-    // Two tricks: declarer team wins one worth 61 Augen, opponents win one worth 0 Augen total minus rest.
-    // Use a minimal, fully-controlled two-trick scenario covering all scoring fields.
     const tricks: TrickCard[][] = [
       trick([
-        [0, { suit: "eichel", rank: "ass" }], // 11, player 0 (declarer) leads & wins
+        [0, { suit: "eichel", rank: "ass" }],
         [1, { suit: "schell", rank: "7" }],
         [2, { suit: "laub", rank: "7" }],
         [3, { suit: "schell", rank: "8" }],
       ]),
       trick([
-        [1, { suit: "herz", rank: "unter" }], // trump, player 1 (opponent) wins
-        [0, { suit: "schell", rank: "koenig" }], // 4
-        [2, { suit: "schell", rank: "ass" }], // 11
-        [3, { suit: "schell", rank: "10" }], // 10
+        [1, { suit: "herz", rank: "unter" }],
+        [0, { suit: "schell", rank: "koenig" }],
+        [2, { suit: "schell", rank: "ass" }],
+        [3, { suit: "schell", rank: "10" }],
       ]),
     ];
 
     const score = calculateRoundScore(tricks, rufspiel, "rufspiel", DEFAULT_SCORING_CONFIG);
 
-    expect(score.declarerTeamPoints).toBe(11); // player 0 won trick 1 (11 Augen)
-    expect(score.opponentTeamPoints).toBe(25); // player 1 won trick 2 (4+11+10 = 25 Augen)
+    expect(score.declarerTeamPoints).toBe(11); // trick 1: player 0 wins with eichel-ass (11 Augen)
+    expect(score.opponentTeamPoints).toBe(27); // trick 2: player 1's herz-unter (trump) wins 2+4+11+10 = 27 Augen
     expect(score.declarerTeamWon).toBe(false);
     expect(score.schneider).toBe(false);
     expect(score.schwarz).toBe(false);
@@ -630,30 +596,43 @@ describe("calculateRoundScore", () => {
   });
 
   it("applies schneider and schwarz when one team takes (almost) all Augen", () => {
-    // Declarer team wins every trick (one trick shown is enough for schwarz: opponents get 0).
+    // Each trick is won by player 2 (declarer team) via a Herz trump; the other three
+    // players each contribute a high-value non-trump card of a different suit.
     const tricks: TrickCard[][] = [
       trick([
-        [0, { suit: "eichel", rank: "ass" }], // 11
-        [1, { suit: "schell", rank: "7" }],
-        [2, { suit: "laub", rank: "7" }],
-        [3, { suit: "schell", rank: "8" }],
+        [1, { suit: "eichel", rank: "ass" }],
+        [3, { suit: "laub", rank: "ass" }],
+        [0, { suit: "schell", rank: "ass" }],
+        [2, { suit: "herz", rank: "ass" }],
+      ]),
+      trick([
+        [1, { suit: "eichel", rank: "10" }],
+        [3, { suit: "laub", rank: "10" }],
+        [0, { suit: "schell", rank: "10" }],
+        [2, { suit: "herz", rank: "10" }],
+      ]),
+      trick([
+        [1, { suit: "eichel", rank: "koenig" }],
+        [3, { suit: "laub", rank: "koenig" }],
+        [0, { suit: "schell", rank: "koenig" }],
+        [2, { suit: "herz", rank: "koenig" }],
       ]),
     ];
 
     const score = calculateRoundScore(tricks, rufspiel, "rufspiel", DEFAULT_SCORING_CONFIG);
 
+    expect(score.declarerTeamPoints).toBe(100);
     expect(score.opponentTeamPoints).toBe(0);
     expect(score.declarerTeamWon).toBe(true);
     expect(score.schneider).toBe(true);
     expect(score.schwarz).toBe(true);
+    expect(score.laufende).toBe(0);
     expect(score.tarif).toBe(
       DEFAULT_SCORING_CONFIG.baseValue + DEFAULT_SCORING_CONFIG.schneiderValue + DEFAULT_SCORING_CONFIG.schwarzValue
     );
   });
 });
 ```
-
-The first test in `calculateRoundScore` ("declares the declarer team the winner...") is overly elaborate and its assertion is a placeholder — **delete that test case entirely**; the other three cases fully cover the scoring behavior (normal win/loss, schneider/schwarz). Do not include it in the file you write.
 
 - [ ] **Step 2: Run test to verify it fails**
 
