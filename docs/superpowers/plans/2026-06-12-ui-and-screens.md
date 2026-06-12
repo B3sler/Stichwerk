@@ -575,11 +575,12 @@ git commit -m "feat: add TrickArea component"
 - Create: `src/ui/game/BiddingPanel.tsx`
 - Test: `src/ui/game/__tests__/BiddingPanel.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
+
+`react-test-renderer`'s `findAllByType(Pressable)` does not match nodes in this RN version (Pressable's rendered tree doesn't retain a `Pressable`-typed node), so identify buttons via `testID` instead, the same pattern used in Tasks 2 and 8.
 
 ```tsx
 // src/ui/game/__tests__/BiddingPanel.test.tsx
-import { Pressable } from "react-native";
 import { renderComponent } from "../../testUtils";
 import { BiddingPanel } from "../BiddingPanel";
 
@@ -589,7 +590,9 @@ describe("BiddingPanel", () => {
       <BiddingPanel callableSuits={["eichel", "laub"]} onCallSuit={jest.fn()} onPass={jest.fn()} />
     );
 
-    expect(tree.root.findAllByType(Pressable)).toHaveLength(3);
+    expect(tree.root.findAllByProps({ testID: "bidding-call-eichel" })[0]).toBeTruthy();
+    expect(tree.root.findAllByProps({ testID: "bidding-call-laub" })[0]).toBeTruthy();
+    expect(tree.root.findAllByProps({ testID: "bidding-pass" })[0]).toBeTruthy();
   });
 
   it("calls onCallSuit with the chosen suit and onPass when passing", () => {
@@ -599,22 +602,21 @@ describe("BiddingPanel", () => {
       <BiddingPanel callableSuits={["eichel"]} onCallSuit={onCallSuit} onPass={onPass} />
     );
 
-    const buttons = tree.root.findAllByType(Pressable);
-    buttons[0].props.onPress();
+    tree.root.findAllByProps({ testID: "bidding-call-eichel" })[0].props.onPress();
     expect(onCallSuit).toHaveBeenCalledWith("eichel");
 
-    buttons[1].props.onPress();
+    tree.root.findAllByProps({ testID: "bidding-pass" })[0].props.onPress();
     expect(onPass).toHaveBeenCalled();
   });
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npm test -- BiddingPanel`
 Expected: FAIL with "Cannot find module '../BiddingPanel'"
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```tsx
 // src/ui/game/BiddingPanel.tsx
@@ -636,11 +638,15 @@ export function BiddingPanel({ callableSuits, onCallSuit, onPass }: BiddingPanel
       <Text style={styles.heading}>Du bist am Reizen</Text>
       <View style={styles.row}>
         {callableSuits.map((suit) => (
-          <Pressable key={suit} style={styles.button} onPress={() => onCallSuit(suit)}>
+          <Pressable
+            key={suit}
+            testID={`bidding-call-${suit}`}
+            style={styles.button}
+            onPress={() => onCallSuit(suit)}>
             <Text style={styles.buttonText}>Rufspiel {SUIT_SYMBOLS[suit]}</Text>
           </Pressable>
         ))}
-        <Pressable style={[styles.button, styles.passButton]} onPress={onPass}>
+        <Pressable testID="bidding-pass" style={[styles.button, styles.passButton]} onPress={onPass}>
           <Text style={styles.buttonText}>Weiter</Text>
         </Pressable>
       </View>
@@ -682,12 +688,12 @@ const styles = StyleSheet.create({
 });
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npm test -- BiddingPanel`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/ui/game/BiddingPanel.tsx src/ui/game/__tests__/BiddingPanel.test.tsx
