@@ -298,7 +298,7 @@ git commit -m "feat: add CardBack component"
 
 No dedicated test for this task — it's a thin composition of `CardBack` + `Text`; it's exercised by manual verification in Task 9.
 
-- [ ] **Step 1: Write the component**
+- [x] **Step 1: Write the component**
 
 ```tsx
 // src/ui/game/OpponentSeat.tsx
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add src/ui/game/OpponentSeat.tsx
