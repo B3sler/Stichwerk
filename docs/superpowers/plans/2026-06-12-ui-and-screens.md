@@ -365,7 +365,7 @@ git commit -m "feat: add OpponentSeat component"
 - Create: `src/ui/game/PlayerHand.tsx`
 - Test: `src/ui/game/__tests__/PlayerHand.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```tsx
 // src/ui/game/__tests__/PlayerHand.test.tsx
@@ -400,12 +400,12 @@ describe("PlayerHand", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npm test -- PlayerHand`
 Expected: FAIL with "Cannot find module '../PlayerHand'"
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```tsx
 // src/ui/game/PlayerHand.tsx
@@ -449,12 +449,12 @@ const styles = StyleSheet.create({
 });
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npm test -- PlayerHand`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/ui/game/PlayerHand.tsx src/ui/game/__tests__/PlayerHand.test.tsx
