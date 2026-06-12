@@ -469,7 +469,7 @@ git commit -m "feat: add PlayerHand component with legal-move highlighting"
 - Create: `src/ui/game/TrickArea.tsx`
 - Test: `src/ui/game/__tests__/TrickArea.test.tsx`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```tsx
 // src/ui/game/__tests__/TrickArea.test.tsx
@@ -503,12 +503,12 @@ describe("TrickArea", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npm test -- TrickArea`
 Expected: FAIL with "Cannot find module '../TrickArea'"
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```tsx
 // src/ui/game/TrickArea.tsx
@@ -555,12 +555,12 @@ const styles = StyleSheet.create({
 });
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `npm test -- TrickArea`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/ui/game/TrickArea.tsx src/ui/game/__tests__/TrickArea.test.tsx
