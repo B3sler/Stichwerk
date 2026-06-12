@@ -258,7 +258,7 @@ git commit -m "feat: add PlayingCard component"
 
 No test for this task — it is a static, prop-less component (a styled `View`); Task 4's `OpponentSeat` smoke test exercises it indirectly.
 
-- [ ] **Step 1: Write the component**
+- [x] **Step 1: Write the component**
 
 ```tsx
 // src/ui/cards/CardBack.tsx
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add src/ui/cards/CardBack.tsx
