@@ -850,7 +850,7 @@ git commit -m "feat: add RoundResult component"
 
 This task wires the components from Tasks 1-8 to `useGameStore`. There is no automated test for the screen itself (it requires the Expo Router navigation context); verify it manually with `npm run web` per Step 3 below.
 
-- [ ] **Step 1: Replace the screen implementation**
+- [x] **Step 1: Replace the screen implementation**
 
 Replace the entire contents of `src/app/index.tsx` with:
 
@@ -948,7 +948,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-- [ ] **Step 2: Run the full test suite and type check**
+- [x] **Step 2: Run the full test suite and type check**
 
 Run: `npm test`
 Expected: all tests pass (existing tests + new component tests from this plan)
@@ -956,7 +956,7 @@ Expected: all tests pass (existing tests + new component tests from this plan)
 Run: `npx tsc --noEmit`
 Expected: no errors
 
-- [ ] **Step 3: Manually verify in the browser**
+- [x] **Step 3: Manually verify in the browser**
 
 Run: `npm run web`
 
@@ -966,7 +966,7 @@ In the browser:
 - If it's the human's turn to play, confirm only legal cards in the hand are enabled (non-legal cards appear dimmed) and tapping one plays it, with bots auto-playing their turns afterwards.
 - Play through to `roundEnd` and confirm `RoundResult` shows the score/tarif (or the "alle Spieler haben gepasst" message if everyone passed), and that "Neue Runde" deals a fresh round.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/app/index.tsx

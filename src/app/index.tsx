@@ -1,98 +1,90 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { callableSuits } from "../domain/rules/bidding";
+import { legalMoves } from "../domain/rules/legalMoves";
+import { useGameStore } from "../state/gameStore";
+import { colors } from "../theme/colors";
+import { radius, spacing } from "../theme/tokens";
+import { BiddingPanel } from "../ui/game/BiddingPanel";
+import { OpponentSeat } from "../ui/game/OpponentSeat";
+import { PlayerHand } from "../ui/game/PlayerHand";
+import { RoundResult } from "../ui/game/RoundResult";
+import { TrickArea } from "../ui/game/TrickArea";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+const HUMAN_INDEX = 0;
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+export default function GameScreen() {
+  const game = useGameStore((state) => state.game);
+  const placeBid = useGameStore((state) => state.placeBid);
+  const playCard = useGameStore((state) => state.playCard);
+  const startNewRound = useGameStore((state) => state.startNewRound);
+
+  const human = game.players[HUMAN_INDEX];
+  const opponents = game.players.filter((_, index) => index !== HUMAN_INDEX);
+
+  const isHumanBidTurn =
+    game.phase === "bidding" && game.bidding.order[game.bidding.currentIndex] === HUMAN_INDEX;
+  const isHumanPlayTurn =
+    game.phase === "playing" &&
+    (game.currentTrick.leaderIndex + game.currentTrick.cards.length) % 4 === HUMAN_INDEX;
+
+  const legal = isHumanPlayTurn
+    ? legalMoves(human.hand, game.currentTrick.cards, "rufspiel", game.activeGame)
+    : undefined;
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+        <Text style={styles.title}>Schafkopf</Text>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        <View style={styles.opponents}>
+          {opponents.map((player) => (
+            <OpponentSeat key={player.id} name={player.name} cardCount={player.hand.length} />
+          ))}
+        </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+        <TrickArea cards={game.currentTrick.cards} playerNames={game.players.map((p) => p.name)} />
+
+        {game.phase === "bidding" && isHumanBidTurn && (
+          <BiddingPanel
+            callableSuits={callableSuits(human.hand)}
+            onCallSuit={(suit) => placeBid({ type: "play", calledSuit: suit })}
+            onPass={() => placeBid({ type: "pass" })}
           />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        )}
 
-        {Platform.OS === 'web' && <WebBadge />}
+        {game.phase === "roundEnd" && (
+          <RoundResult score={game.scores} onNewRound={() => startNewRound((game.dealerIndex + 1) % 4)} />
+        )}
+
+        <PlayerHand cards={human.hand} legalCards={legal} onPlay={isHumanPlayTurn ? playCard : undefined} />
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: colors.background,
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    justifyContent: "space-between",
+    paddingVertical: spacing.lg,
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
+    color: colors.text,
+    fontSize: 28,
+    fontWeight: "700",
   },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  opponents: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: spacing.sm,
+    marginHorizontal: spacing.md,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
   },
 });
